@@ -30,7 +30,7 @@
 	- unlock account
 		- `ipa user-unlock <user_name>`
 	- extend password expiry
-		- `ipa user-mod --passwordexpiration <add_2_months>
+		- `ipa user-mod --passwordexpiration <add_2_months>`
 	- ssh key
 		- upload new ssh key
 			- `ipa user-mod <user_name> --sshpubkey="ssh-rsa 12345abcde= ipaclient.example.com"`
