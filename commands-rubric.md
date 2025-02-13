@@ -189,7 +189,14 @@ aws configure export-credentials --profile <profile> --format env
 ## Git
 
 - Re-Sign any unsigned commits again : `git rebase --exec 'git commit --amend --no-edit -n -S' -i <commit_hash>`
-- Generate GPG keys and sign commits using them: https://josh-ops.com/posts/github-signing-commits/
+- Generate GPG keys and sign commits using them : https://josh-ops.com/posts/github-signing-commits/
+- Add multi-line commit messages
+	```sh
+ 	git commit -S -F- <<EOF
+	> line1
+ 	> line2
+ 	> EOF
+ 	```
 
 # Research:
 
