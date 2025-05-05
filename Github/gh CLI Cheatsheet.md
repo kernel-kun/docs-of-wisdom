@@ -1,0 +1,235 @@
+
+# Table of Contents
+
+- [[#Setup and Authentication|Setup and Authentication]]
+- [[#Managing Multiple Accounts|Managing Multiple Accounts]]
+- [[#GitHub Actions Integration|GitHub Actions Integration]]
+	- [[#GitHub Actions Integration#Managing Variables/Secrets|Managing Variables/Secrets]]
+- [[#Debugging GitHub Actions Workflows|Debugging GitHub Actions Workflows]]
+- [[#Additional Tips|Additional Tips]]
+
+### Setup and Authentication
+
+- **Install GitHub CLI:**
+	
+	```bash
+	# macOS (using Homebrew)
+	brew install gh
+	
+	# Windows (using Chocolatey)
+	choco install gh
+	
+	# Linux (using apt)
+	sudo apt install gh
+	```
+	
+
+- **Authenticate with GitHub:**
+	
+	```bash
+	  gh auth login
+	```
+	
+	Initiates an interactive prompt to authenticate with GitHub. By default, it authenticates with `github.com`. Use the `--hostname` flag to specify a different GitHub instance
+
+- **Authenticate with a Token:**
+
+	```bash
+	  echo YOUR_TOKEN | gh auth login --with-token
+	```
+	
+	Authenticates using a personal access token. Ensure the token has the necessary scopes: `repo`, `read:org`, and `gist`
+
+- **Set Up Git Credential Helper:**
+	
+	```bash
+	  gh auth setup-git
+	```
+	
+	Configures Git to use `gh` as a credential helper for authenticated hosts
+
+### Managing Multiple Accounts
+
+- **View Authentication Status:**
+	
+	```bash
+	  gh auth status
+	```
+	
+	Displays the authentication status for all configured GitHub hosts
+
+- **Switch Between Accounts:**
+	
+	```bash
+	  gh auth switch --hostname HOSTNAME --user USERNAME
+	```
+	
+	Switches the active account for a specified GitHub host. If multiple accounts exist, you can specify which one to switch to using the `--user` flag
+
+### GitHub Actions Integration
+
+- **List Workflows:**
+	
+	```bash
+	  gh workflow list
+	```
+	
+	Lists all workflows in the current repository. Use the `--all` flag to include disabled workflows
+
+- **View Workflow Details:**
+	
+	```bash
+	  gh workflow view WORKFLOW_NAME
+	```
+	
+	Displays details of a specific workflow. Use the `--yaml` flag to view the workflow's YAML file
+
+- **Run a Workflow from specific branch:**
+
+	```bash
+	  gh workflow run WORKFLOW_NAME --ref BRANCH_NAME
+	```
+	
+	Triggers a workflow run on a specified branch or tag. Use the `--field` flag to pass input parameters
+
+- **Run a Workflow using workflow_dispatch Inputs:**
+
+	To run a workflow, use the `workflow run` subcommand. Replace the `workflow` parameter with either the name, ID, or file name of the workflow you want to run. For example, `"Link Checker"`, `1234567`, or `"link-check-test.yml"`. If you don't specify a workflow, GitHub CLI returns an interactive menu for you to choose a workflow.
+	
+	```shell
+	gh workflow run WORKFLOW
+	```
+	
+	If your workflow accepts inputs, GitHub CLI will prompt you to enter them. Alternatively, you can use `-f` or `-F` to add an input in `key=value` format. Use `-F` to read from a file.
+	
+	```shell
+	gh workflow run greet.yml -f name=mona -f greeting=hello -F data=@myfile.txt
+	```
+	
+	You can also pass inputs as JSON by using standard input.
+	
+	```shell
+	echo '{"name":"mona", "greeting":"hello"}' | gh workflow run greet.yml --json
+	```
+
+- **Enable or Disable a Workflow:**
+	
+	```bash
+	gh workflow enable WORKFLOW_NAME
+	gh workflow disable WORKFLOW_NAME
+	```
+	
+	Enables or disables a specified workflow
+
+#### Managing Variables/Secrets
+
+- **Manage Actions Variables:**
+    - **List Variables:**
+        
+        ```bash
+        gh variable list
+        ```
+        
+    - **Get a Variable:**
+        
+        ```bash
+        gh variable get VARIABLE_NAME
+        ```
+        
+    - **Set a Variable:**
+        
+        ```bash
+        gh variable set VARIABLE_NAME --body VALUE
+        ```
+        
+    - **Delete a Variable:**
+        
+        ```bash
+        gh variable delete VARIABLE_NAME
+        ```
+        
+        Manages GitHub Actions variables at the repository level. Use the `--env` flag to specify an environment and the `--org` flag for organization-level variables
+
+- **Manage Secrets**
+
+	- **List Repository Secrets:**
+	
+		```bash
+		  gh secret list
+		```
+	
+	- **List Environment Secrets:**
+	
+		```bash
+		  gh secret list --env ENVIRONMENT_NAME
+		```
+	
+	- **List Organization Secrets:**
+	
+		```bash
+		  gh secret list --org ORGANIZATION_NAME
+		```
+	
+
+### Debugging GitHub Actions Workflows
+
+- **View Workflow Run Details:**
+	
+	```bash
+	  gh run view RUN_ID
+	```
+	
+	Displays detailed information about a specific workflow run. Use the `--log` flag to view the full log or `--log-failed` to view logs for failed steps
+
+- **List Workflow Runs:**
+	
+	```bash
+	  gh run list
+	```
+	
+	Lists recent workflow runs in the current repository. Use the `--workflow WORKFLOW_NAME` flag to filter runs for a specific workflow
+
+- **Rerun a Failed Workflow:**
+	
+	```bash
+	  gh run rerun RUN_ID
+	```
+	
+	Reruns a specific failed workflow run. Use the `--failed` flag to rerun only the failed jobs within that run
+
+- **Download Workflow Artifacts:**
+	
+	```bash
+	  gh run download RUN_ID
+	```
+	
+	Downloads artifacts generated by a specific workflow run. Use the `--name ARTIFACT_NAME` flag to specify a particular artifact
+
+- **Monitor Workflow Run Progress:**
+	
+	```bash
+	  gh run watch RUN_ID
+	```
+	
+	Continuously displays the progress of a specific workflow run until it completes
+
+### Additional Tips
+
+- **Help and Documentation:**
+	
+	```bash
+	gh help
+	gh help COMMAND
+	```
+	
+	Displays general help or detailed information about a specific command
+
+- **Check for Updates:**
+
+	```bash
+	  gh version
+	```
+	
+	Shows the current version of `gh`. Regularly check for updates to access new features and improvements
+
+This cheat sheet provides a foundational overview of `gh` commands for setup, authentication, user management, and GitHub Actions integration. For a complete list of commands and options, refer to the [official GitHub CLI manual](https://cli.github.com/manual/)
