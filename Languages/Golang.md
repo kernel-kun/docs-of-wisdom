@@ -201,7 +201,7 @@ fmt.Print(i)
 
 Keywords: `break`, `continue`
 
-![[Pasted image 20240506161444.png]]
+![](attachment/825931ba4768e28e41ea1009ec0a7507.png)
 
 ## Arrays, Slices, Maps
 
@@ -310,8 +310,8 @@ value, found = my_map['Body Count']
 delete(my_map, 'Body Count')
 ```
 
-![[Pasted image 20240506164340.png]]
-![[Pasted image 20240506164712.png]]
+![](attachment/8b56fb44d62ff3451bddbfd33ea318f5.png)
+![](attachment/b7a8a0f295ef1ef0990f6c1692c77495.png)
 
 ## Functions
 
@@ -431,7 +431,7 @@ concatString := strBuilder.String()
 | Topic/Ques.                                              | Article                                                                                                                                                   | Comments/<br>Notes                   |
 | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
 | What are `go.mod` & `go.sum` files?                      | https://faun.pub/understanding-go-mod-and-go-sum-5fd7ec9bcc34                                                                                             |                                      |
-| How to use packages with same name but different modules | https://stackoverflow.com/questions/10408646/how-to-import-and-use-different-packages-of-the-same-name<br><br>https://go.dev/ref/spec#Import_declarations | ![[Pasted image 20240515141542.png]] |
+| How to use packages with same name but different modules | https://stackoverflow.com/questions/10408646/how-to-import-and-use-different-packages-of-the-same-name<br><br>https://go.dev/ref/spec#Import_declarations | ![](attachment/6562ae715d679de9ad2a878d9fb68e9f.png) |
 |                                                          |                                                                                                                                                           |                                      |
 |                                                          |                                                                                                                                                           |                                      |
 |                                                          |                                                                                                                                                           |                                      |
