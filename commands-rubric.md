@@ -1,6 +1,7 @@
 ## RHIM
 
-> [!ref] Reference
+> [!NOTE]
+> Reference
 > - https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/identity_management_guide/users
 
 - Kerberos tickets:
