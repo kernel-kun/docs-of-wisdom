@@ -13,11 +13,14 @@
 	- [You.com](https://you.com/)
 - Coding
 	- [Github Copilot](https://github.com/features/copilot)
+	- [Cline](https://cline.bot/)
 - Notes/Revision
 	- [NotebookLM](https://notebooklm.google.com/)
 - Domain Specific
 	- Data Charts/Diagrams
 		- [Napkin.ai](https://www.napkin.ai/)
+- Experimentation
+	- [Google AI Studio](https://aistudio.google.com/)
 
 Ref. https://www.synthesia.io/post/ai-tools
 
