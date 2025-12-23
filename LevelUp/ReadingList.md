@@ -49,6 +49,8 @@ GPG
 ## Kubernetes (k8s)
 
 - [CNI Introduction](https://itnext.io/container-network-interface-cni-in-kubernetes-an-introduction-6cd453b622bd)
+- Networking
+	- [Optimizing Kubernetes Networking: Understanding `WARM_ENI_TARGET`, `WARM_IP_TARGET`, and `MINIMUM_IP_TARGET`](https://medium.com/@GiteshWadhwa/optimizing-kubernetes-networking-understanding-warm-eni-target-warm-ip-target-and-14e74096b067) 
 
 ### Debugging
 
