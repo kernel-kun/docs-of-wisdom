@@ -39,6 +39,10 @@ GPG
 - [Convert OpenAPI Spec to different Outputs (eg. HTML Page)](https://openapi-generator.tech/docs/usage/)
 - [Practical Usecase for OpenAPI and Codegen](https://itnext.io/practical-openapi-in-go-1e9e6c4ed439)
 
+## Linux
+
+- [What is `/proc` on Linux](https://medium.com/opstree-technology/proc-file-system-in-linux-6436f128e464)
+
 ## Cloud Technologies
 
 ### AWS
