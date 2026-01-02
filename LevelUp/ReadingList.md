@@ -42,6 +42,8 @@ GPG
 ## Linux
 
 - [What is `/proc` on Linux](https://medium.com/opstree-technology/proc-file-system-in-linux-6436f128e464)
+- Logging
+  - [How to send logs to systemd journal so they can be read using `journalctl`?](https://serverfault.com/questions/573946/how-can-i-send-a-message-to-the-systemd-journal-from-the-command-line)
 
 ## Cloud Technologies
 
