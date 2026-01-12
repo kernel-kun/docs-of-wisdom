@@ -73,7 +73,7 @@ GPG
 
 #### Helm
 
-- [Using multiple `values.yaml` files with Helm, what takes **precedence**?](https://stackoverflow.com/a/56653384)([Documentation](https://stackoverflow.com/a/56653384))
+- [Using multiple `values.yaml` files with Helm, what takes **precedence**?](https://stackoverflow.com/a/56653384)
 - [Helm deployment strategies - `install`, `upgrade`, `rollback`, `atomic`](https://freedium-mirror.cfd/curious-devs-corner/mastering-helm-from-scratch-part-4-exploring-advanced-helm-features-0496d9f89a30)
 
 ## Python
