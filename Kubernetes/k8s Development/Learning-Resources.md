@@ -1,9 +1,18 @@
 # Learning Resources for k8s Development
 
+Awesome Kubernetes Operators Resources - https://github.com/calvin-puram/awesome-kubernetes-operator-resources
+
 ## Kubernetes Operator
 
 - [Build Your Own Kubernetes Operators with Go and Kubebuilder](https://www.youtube.com/watch?v=odP153inZUo)
 - [`client-go` Tutorial](https://www.youtube.com/playlist?list=PLh4KH3LtJvRTb_J-8T--wZeOBV3l3uQhc)
+
+Articles
+- [Guidelines and patterns for beginners to keep in mind when creating k8s Operators](https://medium.com/@timebertt/kubernetes-controllers-at-scale-clients-caches-conflicts-patches-explained-aa0f7a8b4332)
+
+Tutorials/Reference
+- [Sample Controller](https://github.com/kubernetes/sample-controller)
+- [Kubernetes Controller Tutorial by @gianlucam76](https://github.com/gianlucam76/kubernetes-controller-tutorial)
  
 ### Domain specific
 
