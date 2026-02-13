@@ -85,6 +85,8 @@ GPG
 	- [Why do some functions have underscores `__` before and after the function name?](https://stackoverflow.com/questions/8689964/why-do-some-functions-have-underscores-before-and-after-the-function-name) (Eg. `__init__`, `_my_internal_function`, etc.)
 - Debugging
 	- [Inbuilt methods for Debugging/Troubleshooting](https://stackoverflow.com/questions/1006169/how-do-i-look-inside-a-python-object)
+- Design Patterns
+	- [Which design pattern to choose when?](https://freedium-mirror.cfd/womenintechnology/stop-memorizing-design-patterns-use-this-decision-tree-instead-e84f22fca9fa)
 
 ## Terminal
 
