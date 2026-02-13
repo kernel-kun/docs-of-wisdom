@@ -16,6 +16,10 @@ Tutorials/Reference
  
 ### Domain specific
 
+#### Kubernetes API Server
+
+- [Kubernetes API Server Adventures by @danielmagnum](https://danielmangum.com/categories/kubernetes-api-server-adventures/)
+
 #### Webhooks/Admission
 
 - [Admission Controllers and Webhooks](https://www.youtube.com/playlist?list=PLh4KH3LtJvRQ1iaIVkwVvh5_QNJY3dyrb)
