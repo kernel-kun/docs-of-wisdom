@@ -13,7 +13,8 @@
 	- [You.com](https://you.com/)
 - Coding
 	- [Github Copilot](https://github.com/features/copilot)
-	- [Cline](https://cline.bot/)
+	- [kilocode](https://kilo.ai/)
+ 	- Claude Code CLI
 - Notes/Revision
 	- [NotebookLM](https://notebooklm.google.com/)
 - Domain Specific
