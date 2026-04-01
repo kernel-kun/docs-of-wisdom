@@ -64,6 +64,7 @@ GPG
 ### Debugging
 
 - [Using `kubectl debug` to run Ephemeral Containers within a running Pod for debugging](https://medium.com/@simardeep.oberoi/the-ephemeral-containers-in-kubernetes-31d1f1d47bcd)
+- [Kubernetes Ephemeral Containers and kubectl debug Command](https://iximiuz.com/en/posts/kubernetes-ephemeral-containers/)
 
 ### Observability
 
