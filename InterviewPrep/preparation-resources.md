@@ -4,11 +4,21 @@
 
 ### Linux
 
-- https://linkedin.github.io/school-of-sre/level101/linux_basics/intro/
-- https://learnbyexample.github.io/cli-computing/
+Cover the most important topics and build upon them: https://linkedin.github.io/school-of-sre/level101/linux_basics/intro/
+
+> Quick Command Reference
+> https://github.com/trinib/Linux-Bash-Commands
+
+> Detailed Reference
+> https://learnbyexample.github.io/cli-computing/
+
+Interview Ques.
+
+- https://linuxopsys.com/linux-interview-questions-answers
 
 ### Networking
 
+- https://github.com/iam-veeramalla/a-to-z-of-networking
 - https://linkedin.github.io/school-of-sre/level101/linux_networking/intro/
 - 
 
