@@ -16,6 +16,11 @@ Interview Ques.
 
 - https://linuxopsys.com/linux-interview-questions-answers
 
+Hands-On Practice
+
+1. https://kodekloud.com/studio/labs/linux
+2. https://labex.io/linuxjourney
+
 ### Networking
 
 - https://github.com/iam-veeramalla/a-to-z-of-networking
