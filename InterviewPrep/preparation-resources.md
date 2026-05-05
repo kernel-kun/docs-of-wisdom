@@ -58,9 +58,11 @@ Hands-on
 
 > Choose any particular topic to learn - https://collabnix.github.io/kubelabs/
 
-Practice ques.
-
-1. https://github.com/dgkanatsios/ckad-exercises
+Practice Ques.
+- Terminal Hands-On: https://github.com/dgkanatsios/ckad-exercises
+- Vocal Scenario Based
+  - Ques. : https://drive.google.com/file/d/1FVaxoc47r6-J5rnt3rhzAkOS6JLz6GIA/view?usp=sharing
+  - Answers : https://misty-music-5bb.notion.site/K8s-Interview-Prep-Spoken-34fcd80c88f381aa8f50cd120886cb07
 
 In-depth/Ad-Hoc Concepts
 
