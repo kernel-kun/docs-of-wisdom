@@ -73,6 +73,11 @@ Important Numbers
 - Latency, Storage, Requests, etc - https://gist.github.com/mwakaba2/8ad25dda8c71fe529855994c70743733
 - Latency Numbers - https://gist.github.com/jboner/2841832
 
+Practice Ques.
+- Must-know Problems: https://www.hellointerview.com/learn/system-design/in-a-hurry/problem-breakdowns
+- https://www.lintcode.com/problem/?typeId=12
+- https://systemdesign.io/
+
 ## DSA (Data Structures and Algorithms)
 
 > Must remember templates for common patterns
