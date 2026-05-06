@@ -44,7 +44,8 @@ Notes
 ## Docker
 
 Cheatsheet
-- https://github.com/wsargent/docker-cheat-sheet
+- Syntax: https://github.com/LeCoupa/awesome-cheatsheets/blob/master/tools/docker.sh
+- Crash Course: https://github.com/wsargent/docker-cheat-sheet
 
 Hands-on
 
