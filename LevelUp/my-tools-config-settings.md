@@ -59,3 +59,20 @@ Essential tools and modifications for Terminal
 - [7 Must have CLI tools](https://www.youtube.com/watch?v=mmqDYw9C30I)
 - [Backup and Restore Brew Packages](https://gist.github.com/JoeyBurzynski/cbab8361c59a720d60f83c20e8b21e20)
 - [10 CLI tools that made the biggest impact](https://itnext.io/10-cli-tools-that-made-the-biggest-impact-f8a2f4168434)
+
+## Browser
+
+### Extensions
+
+- Development
+  - Okta - Rockstar
+  - Github
+    - Refined Github
+    - Gitako 
+- Must-Have
+  - uBlock Origin
+  - TamperMonkey
+  - Vimium
+  - SinglePage
+  - Obsidian Web Clipper
+  - TabManager Plus
