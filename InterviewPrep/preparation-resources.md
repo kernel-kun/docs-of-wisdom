@@ -31,13 +31,14 @@ Hands-On Practice
 
 ### Terraform 
 
+Notes
+- Must-know Short Notes (+Pointers): https://github.com/kernel-kun/docs-of-wisdom/blob/main/IaC/Terraform%20Rubric.md
+- Detailed Notes: https://github.com/venkateshk111/terraform-beginners-guide [_skip incase of limited time_]
+
 Hands-on Lab
 
-1. https://kodekloud.com/studio/labs/terraform
+1. https://kodekloud.com/studio/labs/terraform [_Attempt only the last 3 during revision_]
 2. https://kodekloud.com/studio/labs/assesments/iac
-
-Notes
-- https://github.com/venkateshk111/terraform-beginners-guide
 
 ## Orchestration
 
