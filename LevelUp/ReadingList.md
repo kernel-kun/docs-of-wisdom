@@ -60,6 +60,8 @@ GPG
 	- [DNS – ndots:5 The Kubernetes Default That’s Silently Slowing Your Services](https://medium.com/@shilu4577/ndots-5-the-kubernetes-default-thats-silently-slowing-your-services-ca92c877e349)
 - Application Development
 	- [What exactly are Startup v/s Liveness v/s Readiness probes in k8s (and when to use what)?](https://medium.com/@jrkessl/readiness-vs-liveness-probes-what-is-the-difference-and-startup-probes-215560f043e4)
+ - Building with GPU
+   - [ELI5 how GPU's work with Kubernetes](https://www.youtube.com/watch?v=bQvrutQO3-c)
 
 ### Internals
 
