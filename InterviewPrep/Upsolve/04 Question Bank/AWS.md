@@ -12,3 +12,4 @@ Index only. Answers live in [[AWS]] (canonical). IaC provisioning → [[Terrafor
 | ECS vs EC2 (image-based packaging) | [[Q2 Software]] | med | 🟢 | [[AWS]] | R1 |
 | Push vs pull ingestion across N cloud accounts | [[Q2 Software]] | med | 🟡 | [[AWS]] | R1 |
 | Durable push ingestion — accept every request, no drops under burst/cold-start (LB can't reach SQS) | [[Q2 Software]] | hard | 🔴 | [[AWS#Durable push ingestion — never lose an authenticated request (interview gap)\|AWS]] | R1 |
+| Fan-out one event to many consumers — SQS vs SNS vs EventBridge vs Kinesis (SQS has no partitions, is point-to-point) | [[Q2 Software]] | hard | 🔴 | [[AWS#Fan-out / pub-sub — one event to many consumers (interview gap)\|AWS]] | R1 |

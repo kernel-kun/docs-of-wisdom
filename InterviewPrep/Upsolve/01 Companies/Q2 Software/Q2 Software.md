@@ -30,6 +30,7 @@ Scenario: acquired startups, ~30 products in AWS + 20 in Azure, each own account
   2. Rate limiting / edge — ALB ≠ rate limiting; needed API Gateway. Unsure how API GW / WAF / CloudFront / ALB layer, where authN/authZ sits, how Okta/OIDC integrates.
   3. Audit & governance thin — for a widely-consumed downstream platform.
   4. Durable push ingestion — couldn't cleanly answer "accept every authenticated request, never drop under burst/cold-start." Proposed SQS-after-LB (LB can't write to SQS). Better: API Gateway → SQS/Kinesis direct integration; consumers drain behind the buffer. → [[AWS#Durable push ingestion — never lose an authenticated request (interview gap)|AWS]]
+  5. Fan-out / pub-sub — budget-breach event must notify **every** subscribed consumer. Fell for the "SQS with partitions" trap (SQS has no partitions and is point-to-point). Right answer: **SNS→SQS fan-out** (durable per-consumer copy) / EventBridge / Kinesis; end-user push via WebSocket/AppSync. → [[AWS#Fan-out / pub-sub — one event to many consumers (interview gap)|AWS]]
 
 **Root cause:** knowledge gap (canonical [[AWS]] didn't exist), not communication — format was a strength.
 

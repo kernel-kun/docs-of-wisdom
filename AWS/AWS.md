@@ -89,4 +89,35 @@ Rule of thumb: **accept-and-persist must be a managed durable service; processin
 
 ---
 
+## Fan-out / pub-sub — one event to many consumers (interview gap)
+
+Scenario: an account crosses a budget (e.g. $500K) → we stop ingesting and must **notify every subscribed consumer** of that event. This is **pub-sub fan-out**, not a work queue.
+
+**The trap: "use SQS with partitions."** SQS has **no partitions** (that's Kinesis *shards* / Kafka *partitions*), and SQS is **point-to-point** — a message is delivered to **one** consumer, then hidden by the visibility timeout and deleted. It cannot show the *same* message to every consumer. Wrong tool for fan-out.
+
+| Service | Model | Use when | Delivery / tracking |
+|---|---|---|---|
+| **SQS** | Point-to-point work queue | One logical worker pool drains a backlog | One consumer per message; at-least-once; DLQ |
+| **SNS** | Pub-sub topic, **push** fan-out | Broadcast one event to many subscribers (Lambda, SQS, HTTP, email/SMS) | Fire-and-forget; retries + delivery-status logging + DLQ, but no per-subscriber "did they read it" |
+| **SNS → SQS fan-out** | Topic → **one SQS queue per consumer** | The canonical AWS answer: every consumer gets its **own durable copy**, drains at its own pace | Per-consumer durability, retries, DLQ; you know it reached each queue, and the consumer's delete = consumed |
+| **EventBridge** | Event bus with **content filtering** + routing | Different consumers want different subsets; SaaS/AWS-service targets; schema registry | Rules per target, retries, archive + **replay** |
+| **Kinesis Data Streams** | Ordered, replayable log; **many independent readers** | High-throughput streaming; each consumer group keeps its own checkpoint and re-reads the same records | Ordered per shard, retention window, replay by iterator |
+
+### The two design axes to name out loud
+
+1. **Do we care whether the consumer received it?**
+   - **Fire-and-forget** → **SNS** straight to subscribers (or push to end-user channels). Cheapest, but no durability if a consumer is down.
+   - **Guaranteed / at-your-own-pace** → **SNS → SQS fan-out** (or EventBridge → SQS). Each consumer has a durable queue; a down consumer catches up later; failures land in a per-consumer DLQ. This is the answer to "ensure the consumer consumed it."
+2. **Same copy to everyone, or a shared log?**
+   - Discrete events, per-consumer isolation → **SNS→SQS** or **EventBridge**.
+   - Ordered, replayable stream multiple teams re-read independently → **Kinesis**.
+
+### Pushing to *end users* (browser/mobile), not backend services
+
+There was no consumer notification system yet — if consumers are humans/clients, the fan-out sink is a real-time channel: **API Gateway WebSocket API**, **AppSync GraphQL subscriptions**, or **SNS mobile push / email / SMS**. Backend event bus (SNS/EventBridge) still sits behind it; the WebSocket/AppSync layer is just the last hop to the client.
+
+Rule of thumb: **SQS = one worker pool draining work; SNS/EventBridge = broadcast an event to many; SNS→SQS = broadcast *and* give each consumer a durable, independently-paced copy.**
+
+---
+
 Related: [[Terraform Rubric]] (provisioning) · [[CKAD]] (K8s) · [[Istio]] (mesh-level LB/mTLS/rate-limiting analogue) · [[System Design]] playbook
