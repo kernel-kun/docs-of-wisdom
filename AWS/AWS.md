@@ -1,0 +1,92 @@
+# AWS
+
+Canonical AWS knowledge note. Single source of truth for AWS concepts referenced across the repo (interview prep, system design, IaC). Provisioning/IaC → [[Terraform Rubric]]. Orchestration → [[CKAD]].
+
+---
+
+## Edge & Traffic Layer — when to use what
+
+The recurring interview trap: "I'll put a load balancer at the front" is not a complete edge design. Each component sits at a different layer and does a different job. Chain them; don't substitute one for another.
+
+| Component | Layer | Primary job | Does NOT do |
+|---|---|---|---|
+| **Route 53** | DNS | Resolve domain → IP; latency/geo/failover routing | No inspection, no auth |
+| **CloudFront** | Edge CDN (L7) | Cache static/dynamic at edge POPs, TLS termination, DDoS absorption (with Shield) | Not a substitute for app auth |
+| **AWS WAF** | L7 filter | Rule-based filtering (SQLi, XSS, IP/geo block, managed rules) — attaches to CloudFront, ALB, or API Gateway | Not rate limiting by identity, not authN |
+| **API Gateway** | L7 API front door | **Rate limiting / throttling (usage plans + API keys)**, request validation, authN/authZ integration (Cognito authorizers, Lambda authorizers, JWT), per-route routing, usage metering | Not a general TCP/HTTP load balancer for arbitrary traffic |
+| **ALB** (Application LB) | L7 | HTTP(S) routing by path/host, target groups, TLS termination, **can do OIDC authN** (`authenticate-oidc` action → Okta/Cognito/any OIDC IdP), sticky sessions | No native rate limiting; no request-quota metering |
+| **NLB** (Network LB) | L4 | Ultra-low-latency TCP/UDP, static IP, millions of connections | No L7 awareness, no auth |
+
+### The key clarifications (interview gaps)
+
+- **Load balancers don't rate-limit out of the box.** ALB has no request-quota feature. For per-client throttling you need **API Gateway usage plans**, or **WAF rate-based rules** (coarse, IP-based, e.g. "block if >2000 req/5min from an IP"), or a service mesh / app-layer limiter. Common mistake: assuming the ALB covers it.
+- **Where auth lives:** authN/authZ can be enforced at:
+  - **CloudFront** → Lambda@Edge / CloudFront Functions (token check at edge).
+  - **API Gateway** → Cognito authorizer or Lambda authorizer (JWT/OIDC validation) — the cleanest place for API auth.
+  - **ALB** → `authenticate-oidc` action offloads login to an OIDC IdP (**Okta**, Cognito, Auth0) *before* traffic hits targets. This is how Okta integrates without app code.
+- **Typical layered edge for a public API:**
+  `Route 53 → CloudFront (+WAF, +Shield) → API Gateway (throttle + authZ) → ALB (path routing, +OIDC/Okta) → ECS/EKS targets`
+  Not every design needs all layers — justify each. A purely internal service may skip CloudFront and API Gateway and use an internal ALB.
+- **ALB vs API Gateway decision:** API Gateway when you need managed throttling, API keys, request validation, per-consumer usage plans, or serverless (Lambda) backends. ALB when you're fronting long-lived container/EC2 services with path/host routing and want lower per-request cost at high volume.
+
+---
+
+## Identity, Access & Secrets
+
+- **IAM** — principals (users, **roles**), policies (identity-based, resource-based), least privilege. Prefer **roles** (assumed, temporary STS creds) over long-lived user keys. For workloads: **IAM roles for service accounts / task roles** (ECS task role, EKS IRSA) — never bake keys into images.
+- **Cross-account access** — assume-role from a central account into acquired-startup accounts (the multi-account cost-dashboard scenario). Central "collector" role assumes a scoped read-only role in each target account (`sts:AssumeRole` + external ID).
+- **Secrets** — **Secrets Manager** (rotation, cross-account resource policies) or **SSM Parameter Store** (cheaper, no auto-rotation). Never env-var secrets in plaintext task defs; reference the secret ARN.
+- **Authentication vs Authorization** — authN = who you are (Okta/OIDC/Cognito, JWT); authZ = what you may do (IAM policies, scopes/claims, API Gateway authorizers). Interviewers probe whether you separate these.
+
+---
+
+## Governance, Audit & Multi-Account
+
+For a platform consumed by many downstream teams (the interview's "governance" gap):
+
+- **AWS Organizations** — multi-account structure; acquired startups → separate accounts under OUs.
+- **SCPs** (Service Control Policies) — org-wide guardrails (e.g. deny disabling CloudTrail, restrict regions).
+- **CloudTrail** — API-call audit log (who did what, when). Org-level trail → central S3 bucket. This is the answer to "how do we audit."
+- **AWS Config** — resource configuration history + compliance rules (drift, policy conformance).
+- **Cost side** — **Cost Explorer / CUR (Cost & Usage Report)** to S3, **Cost Categories** + tags per product/account. Cross-account cost data is pulled via CUR export or Cost Explorer API — directly relevant to the cost-dashboard design.
+- **Data governance for a shared service** — API contracts/versioning, access logging per consumer, quotas per consumer (API Gateway usage plans), schema/PII classification.
+
+---
+
+## Compute choice: ECS vs EC2 vs EKS vs Lambda
+
+- **EC2** — raw VMs; you manage OS, scaling, patching. Max control, max ops burden.
+- **ECS** — AWS-native container orchestration. Two launch types: **Fargate** (serverless, no node management) vs **EC2** (you manage the cluster instances). Good default when the app is **already packaged as images** and you don't need full K8s.
+  - *Why ECS over EC2 (the interview point):* if the software ships as container images, ECS manages placement, health, rollouts, and ties directly into the image/deployment pipeline — you don't hand-roll it on bare EC2.
+- **EKS** — managed Kubernetes; choose when you need the K8s ecosystem/portability. See [[CKAD]] · [[troubleshoot-k8s-compute]].
+- **Lambda** — event-driven, no servers; good for the *ingestion pull jobs* (scheduled cost pulls per account) if runtime < 15 min.
+
+---
+
+## Ingestion patterns (push vs pull)
+
+For "gather cost/metrics from N accounts across AWS + Azure":
+
+- **Pull** — scheduled workers (EventBridge Scheduler → Lambda/ECS task) call each provider's cost API (AWS Cost Explorer / CUR, Azure Cost Management API), assuming a cross-account role per target. Simple, you control cadence; risk = API rate limits & large accounts.
+- **Push** — target accounts export CUR to a central S3 bucket / send to a queue. Scales better, less central credential sprawl; risk = you depend on each account configuring the export.
+- **Decouple with a queue/stream** — land raw pulls in **SQS/Kinesis → S3 (raw) → transform → warehouse** (Athena/Redshift) so ingestion and processing scale independently and you get replay/durability. This is the "buffer before store" tradeoff to name in design rounds.
+
+### Durable push ingestion — never lose an authenticated request (interview gap)
+
+Scenario: external accounts **push** data to us. Once authenticated we must accept **every** request and never drop it, even under a huge burst or while the ingestion compute is cold/scaling/failing. The instinct "just put SQS after the load balancer" is wrong — **an ALB/NLB cannot write to SQS**; only compute or a service integration can.
+
+The fix is to make the **accept tier a managed, always-on service that writes straight to a durable buffer** — so no cold start or fault sits on the ingest path:
+
+- **API Gateway → SQS/Kinesis/Firehose direct service integration** (AWS integration, no Lambda in the middle). API Gateway authenticates (authorizer), then calls `SendMessage`/`PutRecord`/`PutRecordBatch` directly. It's HA and auto-scaling, so the burst is absorbed and persisted **before** any of your compute runs. This is the clean answer to "LB can't reach SQS" — drop the LB from the accept path and let API Gateway be the front door.
+- **Direct-to-S3** (large payloads) — hand the pusher a **pre-signed S3 URL**; they `PUT` straight to S3 (11 9s durable), and an S3 event fans out to SQS/Lambda. Zero custom accept compute.
+- **Firehose** — if you only need raw landing in S3/Redshift, Firehose buffers (size/time) and writes with no code.
+
+Then consumers drain at their own pace: **SQS → ECS/Lambda consumers**, scaled independently. Cold starts and faults are harmless — the message stays in the queue (visibility timeout + retries), and poison messages go to a **DLQ**. Use **Kinesis** instead of SQS when you need ordering, replay, or high fan-out to multiple consumers.
+
+- **If you must keep an LB** (e.g. non-HTTP protocol, existing ALB): the accept service behind it has to be **always-warm** (ECS service with `minCount ≥ 1`, or provisioned-concurrency Lambda) and do nothing but validate + enqueue. Still less robust than the managed accept tier above — name it as the fallback, not the default.
+
+Rule of thumb: **accept-and-persist must be a managed durable service; processing is what scales behind the buffer.** Never let your own compute be the single thing standing between an accepted request and durable storage.
+
+---
+
+Related: [[Terraform Rubric]] (provisioning) · [[CKAD]] (K8s) · [[Istio]] (mesh-level LB/mTLS/rate-limiting analogue) · [[System Design]] playbook
