@@ -38,6 +38,19 @@ The recurring interview trap: "I'll put a load balancer at the front" is not a c
 - **Secrets** — **Secrets Manager** (rotation, cross-account resource policies) or **SSM Parameter Store** (cheaper, no auto-rotation). Never env-var secrets in plaintext task defs; reference the secret ARN.
 - **Authentication vs Authorization** — authN = who you are (Okta/OIDC/Cognito, JWT); authZ = what you may do (IAM policies, scopes/claims, API Gateway authorizers). Interviewers probe whether you separate these.
 
+### How you authenticate & assume roles (interview gap)
+
+The Ericsson gap: knowing only "IAM user + password." The fuller picture — **who** can authenticate and **how you switch identity**:
+
+- **Principals (entities):** **root** (never use for daily work), **IAM users** (long-lived credentials — console password, or access key/secret for the CLI/SDK), and **IAM roles** (no long-lived creds; assumed to get **temporary STS credentials**). Modern orgs front humans with **IAM Identity Center** (SSO) which itself hands out short-lived role sessions — which is why, if you only ever use Identity Center, you may never have touched raw users/roles.
+- **Assuming a role — two ways** (both matter):
+  1. **CLI/API:** `aws sts assume-role --role-arn ... --role-session-name ...` returns temp creds, **or** cleaner: a named profile in `~/.aws/config` with `role_arn` + `source_profile` (or `credential_source`), so `aws --profile foo` assumes it automatically. No manual credential exporting.
+  2. **Console:** top-right account menu → **"Switch Role"** → enter account ID + role name. Same `sts:AssumeRole` under the hood, but in the UI — this is the mechanism the interviewer wanted named.
+- **Same-account vs cross-account:** identical mechanism; the gate is the role's **trust policy** (who is `Principal` allowed to assume it). Cross-account adds the target account as a trusted principal (+ often an **external ID** for third parties). The caller also needs `sts:AssumeRole` permission on their side. Trust policy = *who can assume*; permission policy = *what the role can then do*.
+- **Workloads assume roles too, without any keys:** EC2 **instance profile**, ECS **task role**, EKS **IRSA / Pod Identity** — the SDK transparently fetches temp creds. Never bake access keys into an instance or image.
+
+> Hands-on to close this gap: create a user and a role, write a trust policy, and assume the role both via CLI profile and via console Switch-Role — same account and cross-account.
+
 ---
 
 ## Governance, Audit & Multi-Account
@@ -60,6 +73,44 @@ For a platform consumed by many downstream teams (the interview's "governance" g
   - *Why ECS over EC2 (the interview point):* if the software ships as container images, ECS manages placement, health, rollouts, and ties directly into the image/deployment pipeline — you don't hand-roll it on bare EC2.
 - **EKS** — managed Kubernetes; choose when you need the K8s ecosystem/portability. See [[CKAD]] · [[troubleshoot-k8s-compute]].
 - **Lambda** — event-driven, no servers; good for the *ingestion pull jobs* (scheduled cost pulls per account) if runtime < 15 min.
+
+---
+
+## VPC egress — IGW vs NAT gateway, what attaches where (interview gap)
+
+The Ericsson gap: saying "the **IGW** attaches to the public subnet." It doesn't. Getting the *placement* of each construct right is the whole point:
+
+- **Internet Gateway (IGW)** — attaches at the **VPC level** (one per VPC), horizontally-scaled and HA. It is **not** a subnet resource. A subnet is "**public**" purely because its **route table** has `0.0.0.0/0 → igw-xxxx` **and** the instance has a public/Elastic IP. Nothing is "put in" the subnet.
+- **NAT gateway** — is **provisioned into a specific subnet** (a *public* one), where it gets an **ENI + Elastic IP**. This is the construct that genuinely "lives in a subnet." It does SNAT so private hosts share its EIP (mechanism → [[Networking#NAT gateway — how it works under the hood (Linux/netfilter)|Networking]]).
+
+**Private-subnet EC2 outbound (download packages):**
+1. NAT gateway sits in a **public** subnet (which routes to the IGW).
+2. The **private** subnet's route table sends `0.0.0.0/0 → nat-xxxx`.
+3. Private instance → NAT GW (SNAT to its EIP) → IGW → internet; replies return via conntrack. The instance stays **unreachable from the internet** (egress-only) — that's the point.
+   - Cheaper/native alternative for AWS-service access (no NAT): **VPC gateway/interface endpoints** (S3/ECR/etc. over PrivateLink), so package/image pulls never leave the AWS network.
+
+> One-liner: **IGW = VPC-level (route table makes a subnet public); NAT gateway = lives in a public subnet, gives private subnets egress-only internet.**
+
+---
+
+## Remote access to EC2 with no inbound ports — SSM Session Manager (interview gap)
+
+The question (Lucidity HM): *"connect to EC2 instances but open no inbound ports — no SSH, no VNC."* The answer is **AWS Systems Manager (SSM) Session Manager**. What matters is **why it needs zero inbound**:
+
+- **It's agent-initiated and outbound-only.** The **SSM Agent** (preinstalled on Amazon Linux, Ubuntu, Windows AMIs) runs on the instance and opens an **outbound HTTPS (port 443)** connection *to* the SSM service. When you start a session, traffic is brokered back over that already-open outbound channel (a WebSocket). Nothing ever listens for an inbound connection, so the **security group needs no inbound rule at all** — only egress 443.
+- **No bastion, no SSH keys, no public IP** — access is entirely IAM-controlled. This is the modern replacement for bastion hosts.
+
+**What it needs:**
+- SSM Agent installed & running on the instance.
+- An **IAM instance profile** with `AmazonSSMManagedInstanceCore` (grants `ssmmessages`, `ssm:UpdateInstanceInformation`, `ec2messages`).
+- A network path to three regional endpoints — reachable via NAT/IGW, **or**, for a fully private instance with no internet, via **VPC interface endpoints (PrivateLink)** for `ssm`, `ssmmessages`, `ec2messages`.
+- The operator holds `ssm:StartSession`.
+
+**The three endpoints:** `ssm` (service API/inventory), `ssmmessages` (the Session Manager data channel — the interactive session), `ec2messages` (control channel). All reached over **outbound 443**.
+
+**Why interviewers like it:** full audit via **CloudTrail** + optional session logging to **S3/CloudWatch Logs**, IAM-scoped per-user access, no key sprawl, and supports **port forwarding** (tunnel RDP/DB ports over the same no-inbound channel).
+
+Reading: [Session Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html) · [How it works](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-getting-started.html) · [VPC endpoints for SSM](https://docs.aws.amazon.com/systems-manager/latest/userguide/setup-create-vpc.html).
 
 ---
 

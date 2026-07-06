@@ -26,9 +26,7 @@ Prose experience → this whole loop is automated by the `interview-log` skill.
 | `Templates/` | Reusable scaffolds |
 
 ## Canonical notes referenced
-[[SysAdmin-Troubleshooting]] · [[Bash compendium]] · [[CKAD]] · [[Helm Rubric]] · [[Istio]] · [[troubleshoot-k8s-compute]] · [[Golang]] · [[Concurrent & Parallel Processing]] · [[async (Knowledge Gaps)]] · [[PythonDSA]] · [[BitManipulation]] · [[Terraform Rubric]] · [[AWS]]
-
-Stub to create on first gap: `[[Networking]]`.
+[[SysAdmin-Troubleshooting]] · [[Bash compendium]] · [[CKAD]] · [[Helm Rubric]] · [[Istio]] · [[troubleshoot-k8s-compute]] · [[Golang]] · [[Concurrent & Parallel Processing]] · [[async (Knowledge Gaps)]] · [[PythonDSA]] · [[BitManipulation]] · [[Terraform Rubric]] · [[AWS]] · [[TLS & mTLS]] · [[Networking]] · [[EKS]]
 
 ## Pre-existing prep files (folded in)
 - [[preparation-resources]] — external study links
